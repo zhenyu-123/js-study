@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    let obj = {
+        name: '小明',
+        sex: '男',
+        get() {
+            return this.name + this.sex;
+        }
+    }
+    
+    console.log(Reflect.get(obj, 'name'))
+</script>
+
+</html>

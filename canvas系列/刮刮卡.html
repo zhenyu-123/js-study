@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        margin: 0
+    }
+
+    canvas {
+        position: absolute;
+        left: 0;
+        user-select: none;
+    }
+</style>
+
+<body>
+    <canvas id="canvas" width="621" height="300"></canvas>
+    <img src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4019758616,2584379317&fm=11&gp=0.jpg" alt="">
+</body>
+<script>
+    var canvas = document.getElementById('canvas')
+    var width = 20
+
+    if (canvas.getContext) {
+        var ctx = canvas.getContext('2d')
+        //1、将图片用canvas盖住
+        ctx.fillStyle = "gray"
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        // 图像混合
+        ctx.globalCompositeOperation = 'destination-out'
+        ctx.lineWidth = 20
+
+        canvas.addEventListener('wheel', function (e) {
+            console.log(e.deltaY)
+            if (e.deltaY >= 100) {
+                ctx.lineWidth = 50
+            } else if (e.deltaY <= 100) {
+                ctx.lineWidth = 20
+            }
+        })
+
+        console.log(width)
+        ctx.lineCap = 'round' //笔头的形状
+
+        canvas.onmousedown = function (e) {
+            var x = e.clientX
+            var y = e.clientY
+            ctx.moveTo(x, y)
+
+            canvas.onmousemove = function (e) {
+                var x = e.clientX
+                var y = e.clientY
+                ctx.lineTo(x, y)
+                ctx.stroke()
+            }
+            canvas.onmouseup = function () {
+                canvas.onmousemove = ''
+            }
+        }
+
+    }
+</script>
+
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    canvas {
+        border: 1px solid #000;
+        cursor: pointer;
+    }
+</style>
+
+<body>
+    <canvas id="canvas" width="300" height="500">浏览器不支持</canvas>
+
+</body>
+<script src="./hammer.min.js"></script>
+<script>
+    var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d')
+
+    // if (canvas.getContext) {
+    //     var ctx = canvas.getContext('2d');
+    //     ctx.font="20px 微软雅黑"
+    //     ctx.strokeStyle='red'
+    //     ctx.strokeText('宋宇',100,100)
+    //     ctx.stroke();
+    // }
+
+    // 涂鸦
+    canvas.onmousedown = function (e) {
+        let x = e.clientX - canvas.offsetLeft;
+        let y = e.clientY - canvas.offsetTop;
+        ctx.beginPath()
+        ctx.moveTo(x, y)
+        canvas.onmousemove = function (e) {
+            let x = e.clientX - canvas.offsetLeft;
+            let y = e.clientY - canvas.offsetTop;
+            ctx.strokeStyle = "red"
+            ctx.lineTo(x, y)
+            ctx.stroke()
+        }
+        canvas.onmouseup = function () {
+            canvas.onmousemove = ''
+        }
+
+    }
+</script>
+
+</html>

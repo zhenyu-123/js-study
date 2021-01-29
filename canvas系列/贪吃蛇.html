@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        text-align: center;
+    }
+
+    canvas {
+        border: 1px solid red;
+    }
+</style>
+
+<body>
+    <canvas id="canvas" width="800" height="800"></canvas>
+</body>
+<script>
+    /*
+    1、画蛇
+         蛇头/蛇身
+    2、蛇活动
+        添加键盘事件
+        animate 运动
+    3、随机投放食物
+        坐标位置
+        如果投放到蛇头或蛇身（数据去重）
+    4、吃食物
+        碰撞检测
+        将食物添加到蛇身上
+    5、边缘检测，游戏结束
+        
+    */
+    var canvas = document.getElementById('canvas')
+    if (canvas.getContext) {
+        var ctx = canvas.getContext('2d')
+        var eatFood = false
+        var timer
+
+        function Rect(x, y, width, height, color, speed) {
+            this.x = x
+            this.y = y
+            this.width = width
+            this.height = height
+            this.speed = speed
+            this.color = color
+        }
+
+        Rect.prototype.draw = function () {
+            ctx.beginPath()
+            ctx.fillStyle = this.color
+            ctx.fillRect(this.x, this.y, this.width, this.height)
+            ctx.strokeRect(this.x, this.y, this.width, this.height)
+            ctx.closePath()
+        }
+
+        //创建一个snake构造函数
+        function snake() {
+            //蛇头
+            this.head = new Rect(canvas.width / 2 - 20, canvas.height / 2 - 20, 40, 40, 'red', 2)
+            //蛇身
+            this.body = new Array()
+            var x = this.head.x - 40
+            var y = this.head.y
+            for (var i = 0; i < 3; i++) {
+                var rect = new Rect(x, y, 40, 40, 'gray');
+                this.body.push(rect)
+                x -= 40
+            }
+            this.direction = 2
+        }
+        snake.prototype.draw = function () {
+            //绘制蛇头
+            this.head.draw()
+            //绘制蛇身
+            for (var i = 0; i < this.body.length; i++) {
+                this.body[i].draw()
+            }
+        }
+        snake.prototype.move = function () {
+            // 加头
+            var rect = new Rect(this.head.x, this.head.y, this.head.width, this.head.height, 'gray')
+            this.body.splice(0, 0, rect)
+            //去尾
+            if (eatFood == false) { //没吃到
+                this.body.pop()
+            } else {
+                eatFood = false
+            }
+
+            switch (this.direction) {
+                case 0: {
+                    this.head.x -= this.head.width;
+                    break
+                }
+                case 1: {
+                    this.head.y -= this.head.height;
+                    break
+                }
+                case 2: {
+                    this.head.x += this.head.width;
+                    break
+                }
+                case 3: {
+                    this.head.y += this.head.height;
+                    break
+                }
+            }
+            //边界
+            if (this.head.x >= canvas.width || this.head.x < 0 || this.head.y >= canvas.height || this.head.y < 0) {
+                clearInterval(timer)
+                timer = null;
+                alert("游戏结束")
+            }
+            // 判断蛇头和蛇身是否重叠
+            for (var i = 0; i < this.body.length; i++) {
+                if (isRectHit(this.head, this.body[i])) {
+                    clearInterval(timer)
+                    timer = null;
+                    alert("游戏结束")
+                }
+            }
+        }
+
+
+        // 投放食物
+        function randForFood() {
+            var isSnake = true
+            while (isSnake) {
+                var x = getRandInRange(0, ((canvas.width - 40) / 40) * 40)
+                var y = getRandInRange(0, ((canvas.height - 40) / 40) * 40)
+                //食物矩形
+                var rect = new Rect(x, y, 40, 40, 'blue')
+                //判断食物是否和蛇头重叠
+                if (isRectHit(snake2.head, rect)) {
+                    isSnake = true
+                    continue
+                }
+                isSnake = false
+                //判断是否与蛇身重叠
+                for (var i = 0; i < snake2.body.length; i++) {
+                    if (isRectHit(snake2.body[i], rect)) {
+                        isSnake = true
+                        break
+                    }
+                }
+
+            }
+            return rect
+        }
+
+        //获取随机数方法
+        function getRandInRange(min, max) {
+            return Math.round(Math.random() * (max - min) + min)
+        }
+
+        //碰撞检测
+        function isRectHit(rect1, rect2) {
+            //获取矩形的最小x和最大x
+            var minX1 = rect1.x
+            var minX2 = rect2.x
+            var minY1 = rect1.y
+            var minY2 = rect2.y
+
+            var maxX1 = rect1.x + rect1.width
+            var maxX2 = rect2.x + rect2.width
+            var maxY1 = rect1.y + rect1.height
+            var maxY2 = rect2.y + rect2.height
+
+            var minX = Math.max(minX1, minX2)
+            var minY = Math.max(minY1, minY2)
+
+            var maxX = Math.min(maxX1, maxX2)
+            var maxY = Math.min(maxY1, maxY2)
+            if (minX < maxX && minY < maxY) { //碰撞
+                return true
+            } else {
+                return false
+            }
+        }
+
+
+        var snake2 = new snake()
+        var food = randForFood()
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            food.draw()
+            snake2.move()
+            snake2.draw()
+            if (isRectHit(snake2.head, food)) {
+                eatFood = true
+                food = randForFood()
+            }
+        }
+        timer = setInterval(animate, 250)
+
+
+
+
+
+
+
+
+        // 键盘事件
+        document.onkeydown = function (e) {
+            switch (e.keyCode) {
+                case 37: {
+                    snake2.direction = 0;
+                    break
+                }
+                case 38: {
+                    snake2.direction = 1;
+                    break
+                }
+
+                case 39: {
+                    snake2.direction = 2;
+                    break
+                }
+                case 40: {
+                    snake2.direction = 3;
+                    break
+                }
+            }
+        }
+    }
+</script>
+
+</html>

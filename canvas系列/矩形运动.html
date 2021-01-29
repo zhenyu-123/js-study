@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        list-style: none;
+        padding: 0;
+    }
+
+    #canvas {
+        border: solid 1px red;
+        margin-left: 200px;
+    }
+</style>
+
+<body>
+    <canvas id="canvas" width="600" height="300">浏览器不支持</canvas>
+</body>
+<script>
+    var canvas = document.getElementById('canvas');
+    if (canvas.getContext) {
+        var ctx = canvas.getContext('2d');
+        /*
+        canvas 的动画原理
+        1、绘制图像
+        2、清除图像
+        3、更新位置
+        4、绘制图像
+        */
+        var x = 0,
+            y = 0,
+            speedX = 2,
+            speedY = 2,
+            width = 100,
+            height = 100;
+        ctx.fillStyle = "red"
+        ctx.fillRect(x, y, width, height)
+
+        // setInterval(function () {
+        //     ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        //     x += speedX
+        //     if (x > canvas.width - width) {
+        //         speedX *= -1 //加负数 ，往回走
+        //     } else if (x < 0) {
+        //         speedX *= -1
+        //     }
+
+        //     y += speedY
+        //     if (y > canvas.height - height) {
+        //         speedY *= -1 //加负数 ，往回走
+        //     } else if (y < 0) {
+        //         speedY *= -1
+        //     }
+        //     ctx.fillRect(x, y, width, height)
+        // }, 20)
+
+    }
+
+    // 关键帧动画 
+    function move() {
+ 
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        x += speedX
+        if (x > canvas.width - width) {
+            speedX *= -1 //加负数 ，往回走
+        } else if (x < 0) {
+            speedX *= -1
+        }
+
+        y += speedY
+        if (y > canvas.height - height) {
+            speedY *= -1 //加负数 ，往回走
+        } else if (y < 0) {
+            speedY *= -1
+        }
+        ctx.fillRect(x, y, width, height)
+
+        window.requestAnimationFrame(move); //动画回调
+    }
+    move()
+</script>
+
+</html>

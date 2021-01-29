@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飞机大战</title>
+</head>
+<style>
+    * {
+        margin: 0;
+    }
+
+    body {}
+
+    canvas {
+        margin-top: 30px;
+        box-shadow: 0 0 10px #333;
+    }
+
+    #herocanvas {
+        position: absolute;
+        left: 0;
+        top: 0;
+        background-color: red;
+    }
+</style>
+
+<body onload="drawAirplane()">
+    <canvas id="bgcanvas" width="320" height="568"></canvas>
+    <canvas id="herocanvas" width="50" height="50"></canvas>
+</body>
+<script src="./background.js"></script>
+<script src="./hero.js"></script>
+<script>
+    function drawAirplane() {
+        var bgcanvas = document.getElementById('bgcanvas')
+        if (bgcanvas.getContext) {
+
+            var bgURL = 'bg.jpg'
+            //加载图片
+            loadBackground(bgURL, bgcanvas, moveBackground)
+
+            function moveBackground(image) {
+                //设置背景音乐
+                var bgsound = new Audio('bg.mp3')
+                bgsound.loop = true
+                bgsound.play()
+                // 背景移动
+                setInterval(function () {
+                    //执行速度
+                    var speed = 5
+                    //执行方法
+                    animationBackground(bgcanvas, image, speed)
+
+
+                }, 30)
+
+                //主角出场
+                var herocanvas = getElementById('herocanvas')
+                var img = 'hero.jpg'
+                var hero = createHero(herocanvas,img,heroload)
+                function heroload(){
+
+                }
+            }
+        }
+    }
+</script>
+
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    let a1, a2, a3, a4;
+    a1 = true;
+    a2 = false;
+    a3 = false;
+    a4 = false;
+    let obj1={
+        name:'哈哈'
+    }
+    var obj = new Proxy(obj1, {
+        get: function (target, propKey, receiver) {
+            console.log(`getting ${propKey}!`);
+            return Reflect.get(target, propKey, receiver);
+        },
+        set: function (target, propKey, value, receiver) {
+            console.log(target, propKey, value, receiver)
+            //{} "count" 1 Proxy {}
+            console.log(`setting ${propKey}!`);
+            return Reflect.set(target, propKey, value, receiver);
+        }
+    });
+    obj.count = 1
+    console.log(obj)
+    obj.count+2;
+</script>
+
+</html>

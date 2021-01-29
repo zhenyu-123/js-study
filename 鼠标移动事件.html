@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    img {
+        position: absolute;
+        width: 200px;
+        height: 300px;
+    }
+    *{
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+</style>
+
+<body>
+    <img src="https://picsum.photos/130/200" alt=""  >
+</body>
+<script>
+    let img = document.querySelector('img');
+    let width=img.getBoundingClientRect().width
+    let height=img.getBoundingClientRect().height
+    function start() {
+        document.addEventListener('mousemove', function (e) {
+            let x = e.clientX;
+            let y = e.clientY;
+            img.style.top = y + 'px';
+            img.style.left = x + 'px';
+        })
+    }
+ 
+
+    document.addEventListener('mousedown', function (e) {
+        let x = e.clientX;
+        let y = e.clientY;
+        img.style.top = y + 'px';
+        img.style.left = x + 'px';
+        img.removeEventListener('mousemove',start)
+    })
+</script>
+
+</html>

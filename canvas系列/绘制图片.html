@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        list-style: none;
+        padding: 0;
+    }
+    #canvas{
+        border: solid 1px red;
+    }
+</style>
+
+<body>
+    <canvas id="canvas" width="300" height="800">浏览器不支持</canvas>
+</body>
+<script>
+    var canvas = document.getElementById('canvas');
+    if (canvas.getContext) {
+        var ctx = canvas.getContext('2d');
+        //1、 绘制图片  
+        var img = new Image();
+        img.src =
+            "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fnimg.ws.126.net%2F%3Furl%3Dhttp%253A%252F%252Fdingyue.ws.126.net%252F2020%252F1118%252F7e3175cej00qjz5gn000kc000hs008lc.jpg%26thumbnail%3D650x2147483647%26quality%3D80%26type%3Djpg&refer=http%3A%2F%2Fnimg.ws.126.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1611900707&t=f5c8c359f5cb55935701fd2e3abef658";
+        // img.onload = function () {
+        //     var clonimg = ctx.createPattern(img, 'repeat');
+        //     ctx.fillStyle = clonimg;
+        //     ctx.fillRect(0,0,300,300)
+        // }
+        //2、绘制图片
+        // img.onload = function () {
+        //      ctx.drawImage(this,0,0);
+        //     /**
+        //      * drawImage() 参数
+        //      * 参数1：图像dom
+        //      * 参数2：x轴
+        //      * 参数3：y轴
+        //      * 参数4：宽度
+        //      * 参数5：高度
+        //      * 参数6：绘制x轴
+        //      * 参数7：绘制y轴
+        //      * 参数8：绘制宽度
+        //      * 参数9：绘制高度
+        //      * 
+        //      * */
+        // }
+        //3、图像裁剪
+        img.onload=function(){
+            /*
+            画圆、填充、裁剪、绘制到canvas
+            */
+            ctx.arc(150,130,100,0,Math.PI*2)
+            ctx.fill()
+            ctx.clip();
+            ctx.drawImage(this,1,0)
+
+        }
+    }
+</script>
+
+</html>

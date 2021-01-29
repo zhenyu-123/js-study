@@ -1,0 +1,51 @@
+<style>
+    html,
+    body {
+        /* 重置默认样式 */
+        margin: 0;
+        padding: 0;
+    }
+
+    html,
+    body,
+    #mycanvas {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+</style>
+
+<div id="mycanvas">
+    <canvas id="canvas"></canvas>
+</div>
+
+ 
+<script>
+    document.body.addEventListener('touchstart', function () {
+        event.preventDefault(); //手指滑动时，浏览器会上下左右翻屏
+    });
+    var oCanvas = document.getElementById("canvas");
+    oCanvas.width = document.body.clientWidth;
+    oCanvas.height = document.body.clientHeight;
+    var cxt = oCanvas.getContext("2d");
+    cxt.lineWidth = 5;
+    var posX = 0; //x坐标
+    var posY = 0; //y坐标
+    var position = null;
+
+    //手指触摸屏幕可记录此时的位置作为起点
+    oCanvas.addEventListener("touchstart", function () {
+        posX = event.changedTouches[0].clientX;
+        posY = event.changedTouches[0].clientY;
+
+        cxt.moveTo(posX, posY);
+    });
+
+    //手指屏滑动画线
+    oCanvas.addEventListener("touchmove", function () {
+        posX = event.changedTouches[0].clientX;
+        posY = event.changedTouches[0].clientY;
+        cxt.lineTo(posX, posY);
+        cxt.stroke();
+    });
+</script>

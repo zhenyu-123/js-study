@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        margin: 0;
+    }
+
+    canvas {
+        border: 1px solid red;
+    }
+</style>
+
+<body>
+    <canvas id="canvas" width="600" height="350"></canvas>
+</body>
+<script>
+    var canvas = document.getElementById("canvas")
+    if (canvas.getContext) {
+        var ctx = canvas.getContext('2d')
+        var x = 0
+
+        // 水平背景移动
+        function backgroundMove() {
+            //记录状态  (栈的存储方式)
+            ctx.save()  
+
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            ctx.translate(-x, 0)
+            ctx.drawImage(bgImage, 0, 0)
+            ctx.drawImage(bgImage, canvas.width, 0)
+
+            //判断偏移量
+            x++
+            if (x >= canvas.width) {
+                x = 0
+            }
+            ctx.restore();
+            window.requestAnimationFrame(backgroundMove)
+        }
+
+        // 实例化image
+        var bgImage = new Image()
+        bgImage.src = "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3163052745,826433066&fm=26&gp=0.jpg"
+        bgImage.onload = function () {
+            backgroundMove();
+        }
+
+    }
+</script>
+
+</html>

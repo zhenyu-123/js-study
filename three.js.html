@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<!-- saved from url=(0048)https://threejs.org/examples/css3d_panorama.html -->
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>three.js css3d - panorama</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        body {
+            background-color: #000000;
+            margin: 0;
+            cursor: move;
+            overflow: hidden;
+        }
+
+        a {
+            color: #ffffff;
+        }
+
+        #info {
+            position: absolute;
+            width: 100%;
+            color: #ffffff;
+            padding: 5px;
+            font-family: Monospace;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="http://www.yanhuangxueyuan.com/versions/threejsR92/build/three.js"></script>
+    <script src="./js/CSS3DRenderer.js"></script>
+    <script>
+        //定义相机，场景，渲染器，是3D场景形成的三大要素
+        var camera, scene, renderer;
+        //定义几何体，材质，以及几何体加材质之后形成的网格
+        var geometry, material, mesh;
+        //生成三维向量（0,0,0），相机的目标点
+        var target = new THREE.Vector3();
+        //lon 经度 竖着的 有东经 西经 ；lat 维度 横着的 有南纬 北纬
+        //该经纬表示相机的聚焦点，初始状态在前面
+        var lon = 90,
+            lat = 0;
+        //同样是相机的聚焦点，上面是角度，此处转化为弧度制
+        var phi = 0,
+            theta = 0;
+        //移动端用户输入的x，y 
+        var touchX, touchY;
+
+        init();
+        animate();
+
+        function init() {
+            //相机的默认位置在坐标系的原点
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+            //创建场景
+            scene = new THREE.Scene();
+            //右手坐标系，z朝向观察者，即相机。下面是将六个面拼接成立方体，分别对应
+            //这里的图片可以krpano 或则 pano2vr工具生成6张图
+            var sides = [{
+                    url: './img/posx.jpg', //右侧
+                    position: [-512, 0, 0],
+                    rotation: [0, Math.PI / 2, 0]
+                },
+                {
+                    url: './img/negx.jpg', //左侧
+                    position: [512, 0, 0],
+                    rotation: [0, -Math.PI / 2, 0]
+                },
+                {
+                    url: './img/posy.jpg', //上侧
+                    position: [0, 512, 0],
+                    rotation: [Math.PI / 2, 0, Math.PI]
+                },
+                {
+                    url: './img/negy.jpg', //下侧
+                    position: [0, -512, 0],
+                    rotation: [-Math.PI / 2, 0, Math.PI]
+                },
+                {
+                    url: './img/posz.jpg', //前
+                    position: [0, 0, 512],
+                    rotation: [0, Math.PI, 0]
+                },
+                {
+                    url: './img/negz.jpg', //后
+                    position: [0, 0, -512],
+                    rotation: [0, 0, 0]
+                }
+            ];
+            //将六个图片添加到场景中
+            for (var i = 0; i < sides.length; i++) {
+                var side = sides[i];
+                var element = document.createElement('img');
+                element.width = 1026; // 2 pixels extra to close the gap.
+                element.src = side.url;
+                //CSS3DObject 是拓展出去的方法，原型是object3D，见CSS3DRenderer.js
+                var object = new THREE.CSS3DObject(element);
+                object.position.fromArray(side.position);
+                object.rotation.fromArray(side.rotation);
+                scene.add(object);
+            }
+            //渲染器也是拓展出来的方法，见CSS3DRenderer.js
+            renderer = new THREE.CSS3DRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+            //添加鼠标，手势，窗口事件
+            document.addEventListener('mousedown', onDocumentMouseDown, false);
+            document.addEventListener('wheel', onDocumentMouseWheel, false);
+            document.addEventListener('touchstart', onDocumentTouchStart, false);
+            document.addEventListener('touchmove', onDocumentTouchMove, false);
+
+            window.addEventListener('resize', onWindowResize, false);
+
+        }
+
+        function onWindowResize() {
+            //窗口缩放的时候，保证场景也跟随着一起缩放
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onDocumentMouseDown(event) {
+            event.preventDefault();
+            //保证监听拖拽事件
+            document.addEventListener('mousemove', onDocumentMouseMove, false);
+            document.addEventListener('mouseup', onDocumentMouseUp, false);
+        }
+
+        function onDocumentMouseMove(event) {
+            //鼠标的移动距离  currentEvent.movementX = currentEvent.screenX - previousEvent.screenX
+            var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+            var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+            lon -= movementX * 0.1;
+            lat += movementY * 0.1;
+        }
+
+        function onDocumentMouseUp(event) {
+            //保证监听拖拽事件
+            document.removeEventListener('mousemove', onDocumentMouseMove);
+            document.removeEventListener('mouseup', onDocumentMouseUp);
+        }
+
+        function onDocumentMouseWheel(event) {
+            //相机的视觉随着鼠标滚动的距离拉进或者远离
+            var fov = camera.fov + event.deltaY * 0.05;
+            camera.fov = THREE.Math.clamp(fov, 10, 75);
+            camera.updateProjectionMatrix();
+        }
+
+        function onDocumentTouchStart(event) {
+            event.preventDefault();
+            //移动端没有movement，所以直接用touchX touchY去计算移动的距离
+            var touch = event.touches[0];
+            touchX = touch.screenX;
+            touchY = touch.screenY;
+        }
+
+        function onDocumentTouchMove(event) {
+            event.preventDefault();
+            var touch = event.touches[0];
+            lon -= (touch.screenX - touchX) * 0.1;
+            lat += (touch.screenY - touchY) * 0.1;
+            touchX = touch.screenX;
+            touchY = touch.screenY;
+        }
+        //开启动画
+        function animate() {
+            requestAnimationFrame(animate);
+            //自动由左向右横向预览全景
+            // lon +=  0.1;
+            lat = Math.max(-85, Math.min(85, lat));
+            phi = THREE.Math.degToRad(90 - lat); //角度转为弧度制
+            theta = THREE.Math.degToRad(lon);
+            //在球坐标系中算出相机的聚焦点的坐标
+            target.x = Math.sin(phi) * Math.cos(theta);
+            target.y = Math.cos(phi);
+            target.z = Math.sin(phi) * Math.sin(theta);
+            camera.lookAt(target);
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+
+</html>

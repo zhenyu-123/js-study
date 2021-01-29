@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件上传</title>
+</head>
+
+<body>
+    <input type="file" accept="image/png,image/*" onchange="changefile(this)" placeholder="请选择图片">
+    <img width="300px" src="" alt="">
+</body>
+<script>
+    function changefile(img) {
+        // 生成一个文件读取的对象
+        const reader = new FileReader();
+
+        //发起异步读取文件请求，读取结果为data:url的字符串形式，前台预览
+        reader.readAsDataURL(img.files[0]);
+        reader.onload = function (ev) {
+            // base64码
+            var imgFile = ev.target.result; //或e.target都是一样的
+            document.querySelector("img").src = ev.target.result;
+        }
+    }
+</script>
+
+</html>

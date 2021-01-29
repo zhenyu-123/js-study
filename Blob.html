@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blob</title>
+</head>
+<img src="" alt="">
+<body>
+
+  <script>
+    // let blob = new Blob(['daasdasdsad']);
+    // console.log(blob);
+    // 下载图片
+    let img = document.querySelector('img')
+    function downloadimg(url) {
+      let xhr = new XMLHttpRequest();
+      xhr.open("GET", url);
+      xhr.responseType = "blob"
+      xhr.send();
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState !== 4) {
+          return;
+        }
+        const status = xhr.status;
+        if ((status >= 200 && status < 300) || status === 304) {
+          let bloburl = URL.createObjectURL(xhr.response);
+          img.setAttribute("src", bloburl)
+          //创建a标签
+          const domA = document.createElement("a")
+          domA.innerText = "下载"
+          domA.setAttribute("download", '文件名字')
+          domA.setAttribute("href", bloburl)
+          document.body.appendChild(domA)
+          // domA.click();
+        } else {
+          console.log('request error');
+        }
+      };
+    }
+    downloadimg("https://i0.hdslb.com/bfs/sycp/creative_img/202012/51be27723baa50aa525376c20d35256e.jpg");
+  </script>
+</body>
+</html>
